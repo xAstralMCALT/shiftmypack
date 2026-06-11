@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shift My Pack</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <main class="page">
+    <div class="card">
+      <h1>Shift My Pack</h1>
+      <p>Upload a Java Edition resource pack zip and download a converted Bedrock Edition mcpack.</p>
+      <form action="/convert" method="post" enctype="multipart/form-data">
+        <label for="pack">Select Java resource pack:</label>
+        <input id="pack" name="pack" type="file" accept=".zip,.jar" required />
+        <button type="submit">Convert pack</button>
+      </form>
+      <footer>
+        <p>Run the server with <code>go run main.go</code> or use the CLI with <code>-i</code> and <code>-o</code>.</p>
+      </footer>
+    </div>
+  </main>
+</body>
+</html>
