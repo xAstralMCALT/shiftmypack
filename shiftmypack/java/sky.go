@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/magiconair/properties"
-	"github.com/restartfu/shiftmypack/shiftmypack/image"
+	"github.com/xAstralMCALT/shiftmypack/shiftmypack/image"
 )
 
 type skyProperty struct {

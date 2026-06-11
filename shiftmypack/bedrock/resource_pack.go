@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/restartfu/shiftmypack/shiftmypack/image"
-	"github.com/restartfu/shiftmypack/shiftmypack/internal/fsutil"
-	"github.com/restartfu/shiftmypack/shiftmypack/internal/logger"
+	"github.com/xAstralMCALT/shiftmypack/shiftmypack/image"
+	"github.com/xAstralMCALT/shiftmypack/shiftmypack/internal/fsutil"
+	"github.com/xAstralMCALT/shiftmypack/shiftmypack/internal/logger"
 )
 
 type ResourcePack struct {
@@ -37,6 +37,7 @@ func NewResourcePack(filePath string) (ResourcePack, error) {
 
 	path, found := fsutil.FindDirectory(r, "overworld_cubemap")
 	if found {
+		pck.CubeMaps = make([]image.Texture, 6)
 		for i := 0; i < 6; i++ {
 			pck.CubeMaps[i], _ = image.NewTextureFS(r, path+"/cubemap_"+strconv.Itoa(i)+".png", false)
 		}

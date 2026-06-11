@@ -73,7 +73,7 @@ func NewManifest(name, description string) Manifest {
 
 // generateManifest generates the manifest for the resource pack.
 func (r ResourcePack) generateManifest(w *zip.Writer) error {
-	manifest := NewManifest(r.Name, "github.com/restartfu")
+	manifest := NewManifest(r.Name, "github.com/xAstralMCALT")
 	f, err := w.Create("manifest.json")
 	if err != nil {
 		return err

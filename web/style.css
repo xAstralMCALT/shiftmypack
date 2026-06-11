@@ -7,48 +7,194 @@ body {
 
 .page {
   min-height: 100vh;
-  display: grid;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   padding: 24px;
-}
-
-.card {
-  width: min(520px, 100%);
-  background: rgba(16, 28, 67, 0.94);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px;
-  padding: 32px;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24);
+  max-width: 700px;
+  margin: 0 auto;
 }
 
 h1 {
   margin: 0 0 16px;
   font-size: clamp(2.2rem, 3vw, 3rem);
+  text-align: center;
 }
 
 p {
   margin: 0 0 24px;
   line-height: 1.7;
   color: #c7d2ff;
+  text-align: center;
 }
 
-label {
+.subtitle {
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+  color: #7d8cff;
+  text-transform: lowercase;
+  font-weight: 500;
+  text-align: center;
+}
+
+.description {
+  font-size: 1rem;
+  margin-bottom: 32px;
+}
+
+.highlight {
+  color: #26d3ff;
+}
+
+.mode-toggle {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 32px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.mode-btn {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: transparent;
+  color: #9bb0ff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-btn:hover {
+  border-color: rgba(255, 255, 255, 0.32);
+  color: #c7d2ff;
+}
+
+.mode-btn.active {
+  background: linear-gradient(90deg, #5f8cff, #26d3ff);
+  color: #091127;
+  border-color: transparent;
+}
+
+.version-selector {
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.version-selector label {
   display: block;
   margin-bottom: 8px;
   font-weight: 600;
+  font-size: 0.95rem;
+  color: #c7d2ff;
 }
 
-input[type="file"] {
+.version-selector select {
   width: 100%;
-  padding: 14px 12px;
-  border-radius: 14px;
+  padding: 12px 16px;
   border: 1px solid rgba(255, 255, 255, 0.16);
   background: rgba(255, 255, 255, 0.06);
   color: #f7f9ff;
-  margin-bottom: 20px;
+  font-size: 0.95rem;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
 }
 
-button {
+.version-selector select:hover {
+  border-color: rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.version-selector select:focus {
+  outline: none;
+  border-color: #26d3ff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.version-selector select option {
+  background: #0b1228;
+  color: #f7f9ff;
+}
+
+form {
+  width: 100%;
+  max-width: 500px;
+}
+
+.drop-zone {
+  width: 100%;
+  padding: 48px 32px;
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+  margin-bottom: 24px;
+}
+
+.drop-zone:hover {
+  border-color: rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.drop-zone.dragover {
+  border-color: #26d3ff;
+  background: rgba(38, 211, 255, 0.08);
+}
+
+.drop-icon {
+  width: 48px;
+  height: 48px;
+  color: #7d8cff;
+  margin: 0 auto 16px;
+  display: block;
+}
+
+.drop-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #f7f9ff;
+  margin: 0 0 8px;
+}
+
+.drop-subtext {
+  font-size: 0.95rem;
+  color: #9bb0ff;
+  margin: 0;
+}
+
+#pack {
+  display: none;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #5f8cff, #26d3ff);
+  animation: progress 2s ease-in-out infinite;
+}
+
+@keyframes progress {
+  0% { width: 0%; }
+  50% { width: 100%; }
+  100% { width: 0%; }
+}
+
+.convert-btn {
   width: 100%;
   padding: 14px 18px;
   border: none;
@@ -58,21 +204,34 @@ button {
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-button:hover {
+.convert-btn:hover {
   filter: brightness(1.05);
 }
 
+.convert-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 footer {
-  margin-top: 24px;
-  font-size: 0.95rem;
+  margin-top: 48px;
+  text-align: center;
+  font-size: 0.9rem;
   color: #9bb0ff;
 }
 
-code {
-  background: rgba(255, 255, 255, 0.08);
-  padding: 0.2rem 0.45rem;
-  border-radius: 8px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+footer p {
+  margin: 0 0 8px;
+}
+
+a {
+  color: #26d3ff;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
 }

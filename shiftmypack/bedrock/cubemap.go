@@ -5,7 +5,7 @@ import (
 
 	img "image"
 
-	"github.com/restartfu/shiftmypack/shiftmypack/image"
+	"github.com/xAstralMCALT/shiftmypack/shiftmypack/image"
 )
 
 var cubemapRotations = []int{5, 4, 2, 3, 0, 1}

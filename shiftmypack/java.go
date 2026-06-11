@@ -7,10 +7,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/restartfu/shiftmypack/shiftmypack/bedrock"
-	"github.com/restartfu/shiftmypack/shiftmypack/image"
-	"github.com/restartfu/shiftmypack/shiftmypack/internal/fsutil"
-	"github.com/restartfu/shiftmypack/shiftmypack/java"
+	"github.com/xAstralMCALT/shiftmypack/shiftmypack/bedrock"
+	"github.com/xAstralMCALT/shiftmypack/shiftmypack/image"
+	"github.com/xAstralMCALT/shiftmypack/shiftmypack/internal/fsutil"
+	"github.com/xAstralMCALT/shiftmypack/shiftmypack/java"
 )
 
 // bedrockReplacer replaces the texture names with the correct names.
@@ -71,34 +71,6 @@ func PortJavaEditionPackAndExtract(pack java.ResourcePack, outputDirector string
 		return err
 	}
 	fmt.Println("extracted mcpack to:", output)
-	return nil
-}
-
-func PortJavaEditionPack(pack java.ResourcePack, output string) error {
-	newPack := bedrock.ResourcePack{}
-	newPack.Name = pack.Name
-
-	pack.PackIcon.Name = "pack_icon.png"
-	newPack.PackIcon = pack.PackIcon
-
-	newPack.Icons = pack.Icons
-	newPack.Particles = pack.Particles
-
-	newPack.Items = pack.Items
-	newPack.Blocks = pack.Blocks
-
-	var newArmors []image.Texture
-	for _, a := range pack.Armors {
-		a.Name = bedrockReplacer.Replace(a.Name)
-		newArmors = append(newArmors, a)
-	}
-	newPack.Armors = newArmors
-	newPack.CubeMaps, _ = bedrock.CubemapsFromTexture(pack.Skies[0])
-
-	if err := newPack.WriteZip(output); err != nil {
-		return err
-	}
-	fmt.Println("mcpack file written to:", output)
 	return nil
 }
 

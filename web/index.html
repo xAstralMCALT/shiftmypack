@@ -3,23 +3,110 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shift My Pack</title>
+  <title>Shift Your Pack</title>
   <link rel="stylesheet" href="/static/style.css" />
 </head>
 <body>
   <main class="page">
-    <div class="card">
-      <h1>Shift My Pack</h1>
-      <p>Upload a Java Edition resource pack zip and download a converted Bedrock Edition mcpack.</p>
-      <form action="/convert" method="post" enctype="multipart/form-data">
-        <label for="pack">Select Java resource pack:</label>
-        <input id="pack" name="pack" type="file" accept=".zip,.jar" required />
-        <button type="submit">Convert pack</button>
-      </form>
-      <footer>
-        <p>Run the server with <code>go run main.go</code> or use the CLI with <code>-i</code> and <code>-o</code>.</p>
-      </footer>
+    <p class="subtitle">shiftyourpack</p>
+    <h1>shift your <span class="highlight">pack</span>.</h1>
+    <p class="description">Convert Minecraft resource packs between Java and Bedrock. Drop a file, grab the other side back. No upload, no signup.</p>
+    
+    <div class="mode-toggle">
+      <button type="button" class="mode-btn active" data-mode="java-to-bedrock">java → bedrock</button>
+      <button type="button" class="mode-btn" data-mode="bedrock-to-java">bedrock → java</button>
     </div>
+
+    <form action="/convert" method="post" enctype="multipart/form-data">
+      <input type="hidden" id="mode" name="mode" value="java-to-bedrock" />
+      <input type="hidden" id="version" name="version" value="1.20" />
+      
+      <div class="version-selector">
+        <label for="versionSelect">Minecraft Version:</label>
+        <select id="versionSelect" name="versionSelect">
+          <option value="1.12">1.12 - 1.12.2</option>
+          <option value="1.13">1.13 - 1.15.2</option>
+          <option value="1.16">1.16 - 1.16.5</option>
+          <option value="1.17">1.17 - 1.17.1</option>
+          <option value="1.18">1.18 - 1.18.2</option>
+          <option value="1.19">1.19 - 1.19.3</option>
+          <option value="1.20" selected>1.20+</option>
+        </select>
+      </div>
+      
+      <div class="drop-zone" id="dropZone">
+        <svg class="drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        <p class="drop-text">drop your pack here</p>
+        <p class="drop-subtext">or click to choose a file</p>
+        <input id="pack" name="pack" type="file" accept=".zip,.jar" required />
+      </div>
+
+      <div class="progress-bar" id="progressBar" style="display: none;">
+        <div class="progress-fill"></div>
+      </div>
+      
+      <button type="submit" id="convertBtn" class="convert-btn">convert pack</button>
+    </form>
+    
+    <footer>
+      <p>&copy; 2026 Shift Your Pack. All rights reserved.</p>
+      <p><strong>Disclaimer:</strong> This website is not made by 8crafter.</p>
+    </footer>
   </main>
+  <script>
+    const modeButtons = document.querySelectorAll('.mode-btn');
+    const modeInput = document.getElementById('mode');
+    const versionInput = document.getElementById('version');
+    const versionSelect = document.getElementById('versionSelect');
+    const form = document.querySelector('form');
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('pack');
+    const progressBar = document.getElementById('progressBar');
+    const convertBtn = document.getElementById('convertBtn');
+
+    versionSelect.addEventListener('change', (e) => {
+      versionInput.value = e.target.value;
+    });
+
+    modeButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        modeButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        modeInput.value = btn.dataset.mode;
+        
+        if (btn.dataset.mode === 'bedrock-to-java') {
+          fileInput.accept = '.mcpack,.mcaddon';
+        } else {
+          fileInput.accept = '.zip,.jar';
+        }
+      });
+    });
+
+    dropZone.addEventListener('click', () => fileInput.click());
+    
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
+    });
+    
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('dragover');
+    });
+    
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      fileInput.files = e.dataTransfer.files;
+    });
+
+    form.addEventListener('submit', () => {
+      progressBar.style.display = 'block';
+      convertBtn.disabled = true;
+    });
+  </script>
 </body>
 </html>

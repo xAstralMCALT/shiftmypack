@@ -11,8 +11,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/restartfu/shiftmypack/shiftmypack"
-	"github.com/restartfu/shiftmypack/shiftmypack/java"
+	"github.com/xAstralMCALT/shiftmypack/shiftmypack"
+	"github.com/xAstralMCALT/shiftmypack/shiftmypack/bedrock"
+	"github.com/xAstralMCALT/shiftmypack/shiftmypack/java"
 )
 
 var indexTemplate = template.Must(template.ParseFiles("web/index.html"))
@@ -20,7 +21,7 @@ var indexTemplate = template.Must(template.ParseFiles("web/index.html"))
 func main() {
 	input := flag.String("i", "", "input path")
 	output := flag.String("o", ".", "output path")
-	addr := flag.String("addr", ":8080", "web server address")
+	addr := flag.String("addr", "0.0.0.0:80", "web server address")
 	flag.Parse()
 
 	if len(*input) > 0 {
@@ -28,7 +29,7 @@ func main() {
 		return
 	}
 
-	fmt.Println("Shift My Pack website available at http://localhost" + *addr)
+	fmt.Println("Shift Your Pack website available at http://shiftmypack.duckdns.org")
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("web"))))
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/convert", convertHandler)
@@ -66,6 +67,16 @@ func convertHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	mode := r.FormValue("mode")
+	if mode == "" {
+		mode = "java-to-bedrock"
+	}
+
+	version := r.FormValue("version")
+	if version == "" {
+		version = "1.20"
+	}
+
 	file, header, err := r.FormFile("pack")
 	if err != nil {
 		http.Error(w, "upload required: "+err.Error(), http.StatusBadRequest)
@@ -94,13 +105,7 @@ func convertHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	javapack, err := java.NewResourcePack(uploaded.Name())
-	if err != nil {
-		http.Error(w, "invalid Java pack: "+err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	outputFile, err := os.CreateTemp(tmpDir, "shiftmypack-*.mcpack")
+	outputFile, err := os.CreateTemp(tmpDir, "shiftmypack-*")
 	if err != nil {
 		http.Error(w, "unable to create output file: "+err.Error(), http.StatusInternalServerError)
 		return
@@ -108,13 +113,41 @@ func convertHandler(w http.ResponseWriter, r *http.Request) {
 	outputFile.Close()
 	defer os.Remove(outputFile.Name())
 
-	if err := shiftmypack.PortJavaEditionPack(javapack, outputFile.Name()); err != nil {
-		http.Error(w, "conversion failed: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
+	filename := strings.TrimSuffix(header.Filename, filepath.Ext(header.Filename))
 
-	filename := strings.TrimSuffix(header.Filename, filepath.Ext(header.Filename)) + ".mcpack"
-	w.Header().Set("Content-Type", "application/vnd.minecraft.resource_pack")
-	w.Header().Set("Content-Disposition", "attachment; filename=\""+filename+"\"")
-	http.ServeFile(w, r, outputFile.Name())
+	if mode == "bedrock-to-java" {
+		bedrockpack, err := bedrock.NewResourcePack(uploaded.Name())
+		if err != nil {
+			http.Error(w, "invalid Bedrock pack: "+err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		outputPath := outputFile.Name() + ".zip"
+		if err := shiftmypack.PortBedrockPackWithVersion(bedrockpack, outputPath, version); err != nil {
+			http.Error(w, "conversion failed: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer os.Remove(outputPath)
+
+		w.Header().Set("Content-Type", "application/zip")
+		w.Header().Set("Content-Disposition", "attachment; filename=\""+filename+".zip\"")
+		http.ServeFile(w, r, outputPath)
+	} else {
+		javapack, err := java.NewResourcePack(uploaded.Name())
+		if err != nil {
+			http.Error(w, "invalid Java pack: "+err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		outputPath := outputFile.Name() + ".mcpack"
+		if err := shiftmypack.PortJavaEditionPack(javapack, outputPath); err != nil {
+			http.Error(w, "conversion failed: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer os.Remove(outputPath)
+
+		w.Header().Set("Content-Type", "application/vnd.minecraft.resource_pack")
+		w.Header().Set("Content-Disposition", "attachment; filename=\""+filename+".mcpack\"")
+		http.ServeFile(w, r, outputPath)
+	}
 }
